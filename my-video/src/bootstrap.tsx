@@ -12,8 +12,60 @@ const {
 	Timeline: {TimelineContext},
 } = Internals;
 
-export default {
-	mount: (
+function RemoteComposition({
+	frame,
+	config,
+	children,
+}: {
+	frame: number;
+	config: VideoConfig;
+	children: any;
+}) {
+	/**
+	 * Stubbing these contexts, is important so hooks like `useVideoConfig()` and `useCurrentFrame()` can continue to work.
+	 *
+	 * In the future, it may be helpful to provide a context provider such as:
+	 * @example
+	 * <RemoteComposition frame={frame} config={config}>
+	 * 	{children}
+	 * </RemoteComposition>
+	 */
+	return (
+		<CanUseRemotionHooks.Provider value>
+			<CompositionManager.Provider
+				value={
+					{
+						compositions: [
+							{
+								id: 'idMustMatch',
+							},
+						],
+						currentComposition: 'idMustMatch',
+						currentCompositionMetadata: {
+							defaultProps: config.defaultProps,
+							durationInFrames: config.durationInFrames,
+							fps: config.fps,
+							height: config.height,
+							width: config.width,
+						},
+					} as CompositionManagerContext
+				}
+			>
+				<TimelineContext.Provider
+					value={
+						{
+							frame,
+						} as TimelineContextValue
+					}
+				>
+					{children}
+				</TimelineContext.Provider>
+			</CompositionManager.Provider>
+		</CanUseRemotionHooks.Provider>
+	);
+}
+function createMounter(Composition: () => JSX.Element) {
+	return (
 		ref: string | HTMLElement,
 		{
 			frame,
@@ -32,50 +84,17 @@ export default {
 		(container as unknown as {reactRoot: ReactDOM.Root}).reactRoot = root;
 		container.setAttribute('data-react-root', 'true');
 		root.render(
-			/**
-			 * Stubbing these contexts, is important so hooks like `useVideoConfig()` and `useCurrentFrame()` can continue to work.
-			 *
-			 * In the future, it may be helpful to provide a context provider such as:
-			 * @example
-			 * <RemoteComposition frame={frame} config={config}>
-			 * 	{children}
-			 * </RemoteComposition>
-			 */
-			<CanUseRemotionHooks.Provider value>
-				<CompositionManager.Provider
-					value={
-						{
-							compositions: [
-								{
-									id: 'idMustMatch',
-								},
-							],
-							currentComposition: 'idMustMatch',
-							currentCompositionMetadata: {
-								defaultProps: config.defaultProps,
-								durationInFrames: config.durationInFrames,
-								fps: config.fps,
-								height: config.height,
-								width: config.width,
-							},
-						} as CompositionManagerContext
-					}
-				>
-					<TimelineContext.Provider
-						value={
-							{
-								frame,
-							} as TimelineContextValue
-						}
-					>
-						<MyComposition />
-					</TimelineContext.Provider>
-				</CompositionManager.Provider>
-			</CanUseRemotionHooks.Provider>
+			<RemoteComposition frame={frame} config={config}>
+				<Composition />
+			</RemoteComposition>
 		);
 		/**
 		 * Ideally, continueRender should be called in a useEffect(), that runs after the component is fully loaded
 		 */
 		continueRender();
-	},
+	};
+}
+export default {
+	mount: createMounter(MyComposition),
+	MyComposition,
 };

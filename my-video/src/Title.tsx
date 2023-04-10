@@ -13,7 +13,7 @@ export const Title: React.FC = () => {
 			style={{opacity}}
 			className="text-gray-700 text-5xl font-bold leading-relaxed"
 		>
-			Welcome to Remotion with Tailwind
+			Welcome to Remotion with Tailwind on second video
 		</div>
 	);
 };

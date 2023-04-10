@@ -1,39 +1,39 @@
 import {WebpackOverrideFn} from 'remotion';
-import { container } from 'webpack'
-import { dependencies as deps } from "../package.json"
+import {container} from 'webpack';
+import {dependencies as deps} from '../package.json';
 
-const { ModuleFederationPlugin } = container;
+const {ModuleFederationPlugin} = container;
 
 export const webpackOverride: WebpackOverrideFn = (currentConfiguration) => {
 	return {
 		...currentConfiguration,
-		entry: ["./src/index.ts"],
+		entry: ['./src/index.ts'],
 		plugins: [
 			...(currentConfiguration.plugins || []),
 			new ModuleFederationPlugin({
-				name: "MyVideo",
-				filename: "remoteEntry.js",
-				exposes: ["./src/bootstrap"],
+				name: 'MyVideo',
+				filename: 'remoteEntry.js',
+				exposes: ['./src/bootstrap'],
 				shared: {
 					react: {
 						requiredVersion: deps.react,
-						import: "react",
-						shareKey: "react",
-						shareScope: "default",
-						singleton: true
-					},
-					"react-dom": {
-						requiredVersion: deps["react-dom"],
-						singleton: true
-					},
-					"remotion": {
-						import: "remotion",
-            shareKey: "remotion",
-            shareScope: "default",
+						import: 'react',
+						shareKey: 'react',
+						shareScope: 'default',
 						singleton: true,
 					},
-				}
-			})
+					'react-dom': {
+						requiredVersion: deps['react-dom'],
+						singleton: true,
+					},
+					remotion: {
+						import: 'remotion',
+						shareKey: 'remotion',
+						shareScope: 'default',
+						singleton: true,
+					},
+				},
+			}),
 		],
 		module: {
 			...currentConfiguration.module,

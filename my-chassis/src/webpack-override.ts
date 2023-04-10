@@ -1,8 +1,8 @@
 import {WebpackOverrideFn} from 'remotion';
-import { container } from 'webpack'
-import { dependencies as deps } from "../package.json"
+import {container, dependencies} from 'webpack';
+import {dependencies as deps} from '../package.json';
 
-const { ModuleFederationPlugin } = container;
+const {ModuleFederationPlugin} = container;
 
 export const webpackOverride: WebpackOverrideFn = (currentConfiguration) => {
 	return {
@@ -10,11 +10,10 @@ export const webpackOverride: WebpackOverrideFn = (currentConfiguration) => {
 		plugins: [
 			...(currentConfiguration.plugins || []),
 			new ModuleFederationPlugin({
-				name: "MyChassis",
-				filename: "remoteEntry.js",
-				exposes: ["./src/bootstrap"],
-				
-			})
+				name: 'MyChassis',
+				filename: 'remoteEntry.js',
+				exposes: ['./src/bootstrap'],
+			}),
 		],
 		module: {
 			...currentConfiguration.module,

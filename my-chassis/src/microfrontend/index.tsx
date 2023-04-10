@@ -1,11 +1,11 @@
 /* eslint-disable no-negated-condition */
 import classNames from 'classnames';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {useQuery} from 'react-query';
 import PropTypes from 'prop-types';
 import assert from 'tiny-invariant';
 
-import {loadMicrofrontend} from './utils/loader.utils';
+import {loadMicrofrontend, loadScript} from './utils/loader.utils';
 import {
 	continueRender,
 	delayRender,
@@ -34,6 +34,7 @@ export type MicrofrontendProps = {
 			props: {frame: number; config: VideoConfig; continueRender: () => void}
 		) => () => void;
 		unmount: (containerRef: string | HTMLElement) => void;
+		MyComposition: React.FunctionComponent;
 	}>;
 };
 
@@ -50,6 +51,8 @@ export const Microfrontend = ({
 	const [handle] = useState(() => delayRender());
 	const frame = useCurrentFrame();
 	const config = useVideoConfig();
+	const containerRef = useRef<HTMLDivElement>(null);
+
 	useEffect(() => {
 		// eslint-disable-next-line camelcase
 		window.remotion_imported = false;
@@ -58,11 +61,13 @@ export const Microfrontend = ({
 		isFetched: isMounted,
 		isError,
 		error,
-		data: {mount} = {},
+		data,
 	} = useQuery(`microfrontend?entry=${entry}&module=${module}`, async () => {
 		assert(loadMicrofrontend, 'props.loadMicrofrontend must be a function');
 		return loadMicrofrontend({entry, scope, module});
 	});
+	const mount = data?.mount;
+	console.log(data);
 
 	const mfClassName = classNames(
 		'microfrontend-container spin-when-empty',
@@ -79,7 +84,8 @@ export const Microfrontend = ({
 
 		let unmount: (() => void) | null = null;
 		try {
-			unmount = mount(containerId, {
+			//@ts-ignore
+			unmount = mount(containerRef.current, {
 				frame,
 				config,
 				continueRender: () => continueRender(handle),
@@ -137,6 +143,7 @@ export const Microfrontend = ({
 			id={containerId}
 			className={mfClassName}
 			{...{'data-mf-scope': scope, 'data-mf-module': module}}
+			ref={containerRef}
 		/>
 	);
 };
