@@ -3,16 +3,23 @@ import {MyComposition} from './Composition';
 import {
 	TimelineContextValue,
 	VideoConfig,
-	CompositionManager,
 	CompositionManagerContext,
-	CanUseRemotionHooks,
-	TimelineContext,
 } from 'remotion';
+import {Internals} from 'remotion';
+const {
+	CanUseRemotionHooks,
+	CompositionManager,
+	Timeline: {TimelineContext},
+} = Internals;
 
 export default {
 	mount: (
 		ref: string | HTMLElement,
-		{frame, config, continueRender}: {frame: number; config: VideoConfig, continueRender: () => void}
+		{
+			frame,
+			config,
+			continueRender,
+		}: {frame: number; config: VideoConfig; continueRender: () => void}
 	) => {
 		const container =
 			ref instanceof HTMLElement ? ref : document.getElementById(ref);
@@ -27,7 +34,7 @@ export default {
 		root.render(
 			/**
 			 * Stubbing these contexts, is important so hooks like `useVideoConfig()` and `useCurrentFrame()` can continue to work.
-			 * 
+			 *
 			 * In the future, it may be helpful to provide a context provider such as:
 			 * @example
 			 * <RemoteComposition frame={frame} config={config}>
@@ -69,6 +76,6 @@ export default {
 		/**
 		 * Ideally, continueRender should be called in a useEffect(), that runs after the component is fully loaded
 		 */
-		continueRender()
+		continueRender();
 	},
 };

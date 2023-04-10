@@ -6,7 +6,13 @@ import PropTypes from 'prop-types';
 import assert from 'tiny-invariant';
 
 import {loadMicrofrontend} from './utils/loader.utils';
-import { continueRender, delayRender, useCurrentFrame, useVideoConfig, VideoConfig } from 'remotion';
+import {
+	continueRender,
+	delayRender,
+	useCurrentFrame,
+	useVideoConfig,
+	VideoConfig,
+} from 'remotion';
 
 export type MicrofrontendProps = {
 	scope: string;
@@ -23,7 +29,10 @@ export type MicrofrontendProps = {
 		entry: string;
 		module: string;
 	}) => Promise<{
-		mount: (containerRef: string | HTMLElement, props: { frame: number, config: VideoConfig, continueRender: () => void }) => () => void;
+		mount: (
+			containerRef: string | HTMLElement,
+			props: {frame: number; config: VideoConfig; continueRender: () => void}
+		) => () => void;
 		unmount: (containerRef: string | HTMLElement) => void;
 	}>;
 };
@@ -39,8 +48,8 @@ export const Microfrontend = ({
 	loadMicrofrontend,
 }: MicrofrontendProps) => {
 	const [handle] = useState(() => delayRender());
-	const frame = useCurrentFrame()
-	const config = useVideoConfig()
+	const frame = useCurrentFrame();
+	const config = useVideoConfig();
 	useEffect(() => {
 		// eslint-disable-next-line camelcase
 		window.remotion_imported = false;
@@ -70,7 +79,11 @@ export const Microfrontend = ({
 
 		let unmount: (() => void) | null = null;
 		try {
-			unmount = mount(containerId, { frame, config, continueRender: () => continueRender(handle) });
+			unmount = mount(containerId, {
+				frame,
+				config,
+				continueRender: () => continueRender(handle),
+			});
 			if (!hasDelayedRender) {
 				continueRender(handle);
 			}
@@ -114,8 +127,10 @@ export const Microfrontend = ({
 	) : !isMounted ? (
 		typeof Loading === 'function' ? (
 			<Loading />
+		) : Loading ? (
+			Loading
 		) : (
-			Loading ? Loading : <div>...loading...</div>
+			<div>...loading...</div>
 		)
 	) : (
 		<div
@@ -128,10 +143,9 @@ export const Microfrontend = ({
 
 Microfrontend.defaultProps = {
 	loadMicrofrontend,
-	Loading: () => <div>...loading...</div>
+	Loading: () => <div>...loading...</div>,
 };
 
 Microfrontend.propTypes = {
 	loadMicrofrontend: PropTypes.func,
 };
-

@@ -32,7 +32,7 @@ export const RemotionRoot: React.FC = () => {
 				height={720}
 				defaultProps={{
 					scope: 'MyVideo',
-					entry: 'http://localhost:3002/remoteEntry.js',
+					entry: 'http://localhost:3001/remoteEntry.js',
 					module: './src/bootstrap',
 				}}
 			/>

@@ -14,8 +14,8 @@
   "repository": {},
   "license": "UNLICENSED",
   "devDependencies": {
-    "@remotion/eslint-config": "3.3.19",
-    "@remotion/eslint-plugin": "3.3.19",
+    "@remotion/eslint-config": "3.3.82",
+    "@remotion/eslint-plugin": "3.3.82",
     "@types/react": "^18.0.6",
     "@types/react-dom": "^18.0.10",
     "@types/web": "^0.0.61",
@@ -32,10 +32,10 @@
     "webpack": "^5.72.0"
   },
   "dependencies": {
-    "@remotion/cli": "3.3.19",
+    "@remotion/cli": "3.3.82",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "remotion": "3.3.19"
+    "remotion": "3.3.82"
   },
   "packageManager": "npm@8.1.2"
 }
