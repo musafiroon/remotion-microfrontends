@@ -65,36 +65,36 @@ function RemoteComposition({
 	);
 }
 function createMounter(Composition: () => JSX.Element) {
-	return (
-		ref: string | HTMLElement,
-		{
-			frame,
-			config,
-			continueRender,
-		}: {frame: number; config: VideoConfig; continueRender: () => void}
-	) => {
-		const container =
-			ref instanceof HTMLElement ? ref : document.getElementById(ref);
-		if (!container) {
-			throw new Error('No container found');
-		}
-		const root = container.hasAttribute('data-react-root')
-			? (container as unknown as {reactRoot: ReactDOM.Root}).reactRoot
-			: ReactDOM.createRoot(container);
-		(container as unknown as {reactRoot: ReactDOM.Root}).reactRoot = root;
-		container.setAttribute('data-react-root', 'true');
-		root.render(
-			<RemoteComposition frame={frame} config={config}>
-				<Composition />
-			</RemoteComposition>
-		);
-		/**
-		 * Ideally, continueRender should be called in a useEffect(), that runs after the component is fully loaded
-		 */
-		continueRender();
+	return {
+		mount: (
+			ref: string | HTMLElement,
+			{
+				frame,
+				config,
+				continueRender,
+			}: {frame: number; config: VideoConfig; continueRender: () => void}
+		) => {
+			const container =
+				ref instanceof HTMLElement ? ref : document.getElementById(ref);
+			if (!container) {
+				throw new Error('No container found');
+			}
+			const root = container.hasAttribute('data-react-root')
+				? (container as unknown as {reactRoot: ReactDOM.Root}).reactRoot
+				: ReactDOM.createRoot(container);
+			(container as unknown as {reactRoot: ReactDOM.Root}).reactRoot = root;
+			container.setAttribute('data-react-root', 'true');
+			root.render(
+				<RemoteComposition frame={frame} config={config}>
+					<Composition />
+				</RemoteComposition>
+			);
+			/**
+			 * Ideally, continueRender should be called in a useEffect(), that runs after the component is fully loaded
+			 */
+			continueRender();
+		},
 	};
 }
-export default {
-	mount: createMounter(MyComposition),
-	MyComposition,
-};
+export default createMounter(MyComposition);
+export const MyComposition1 = createMounter(MyComposition);

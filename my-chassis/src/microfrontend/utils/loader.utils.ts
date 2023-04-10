@@ -5,7 +5,7 @@ import {sleep} from './sleep.utils';
 import {assert} from './assert.utils';
 
 type WebpackFederatedModule = {
-	default: {
+	[key: string]: {
 		mount: (containerRef: string | HTMLElement) => () => void;
 		unmount: (containerRef: string | HTMLElement) => void;
 	};
@@ -84,14 +84,19 @@ export const loadMicrofrontend = async ({
 	entry,
 	scope,
 	module,
+	composition = 'default',
 }: {
 	entry: string;
 	scope: string;
 	module: string;
+	composition: string;
 }) =>
 	loadScript(`mf-${scope.toLowerCase()}-entry`, entry)
 		.then(() => loadComponent(scope, module)())
-		.then((exported) => assert(exported).default)
+		.then((exported) => {
+			console.log(exported);
+			return assert(exported)[composition];
+		})
 		.then(({mount, unmount}) => {
 			return {
 				mount,

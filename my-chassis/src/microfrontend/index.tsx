@@ -5,7 +5,7 @@ import {useQuery} from 'react-query';
 import PropTypes from 'prop-types';
 import assert from 'tiny-invariant';
 
-import {loadMicrofrontend, loadScript} from './utils/loader.utils';
+import {loadMicrofrontend} from './utils/loader.utils';
 import {
 	continueRender,
 	delayRender,
@@ -24,17 +24,18 @@ export type MicrofrontendProps = {
 	hasDelayedRender?: boolean;
 	className?: string;
 	Loading?: JSX.Element | (() => JSX.Element);
+	composition?: String;
 	loadMicrofrontend?: (manifest: {
 		scope: string;
 		entry: string;
 		module: string;
+		composition?: string;
 	}) => Promise<{
 		mount: (
 			containerRef: string | HTMLElement,
 			props: {frame: number; config: VideoConfig; continueRender: () => void}
 		) => () => void;
 		unmount: (containerRef: string | HTMLElement) => void;
-		MyComposition: React.FunctionComponent;
 	}>;
 };
 
@@ -47,6 +48,7 @@ export const Microfrontend = ({
 	className,
 	hasDelayedRender,
 	loadMicrofrontend,
+	composition = 'default',
 }: MicrofrontendProps) => {
 	const [handle] = useState(() => delayRender());
 	const frame = useCurrentFrame();
@@ -64,7 +66,12 @@ export const Microfrontend = ({
 		data,
 	} = useQuery(`microfrontend?entry=${entry}&module=${module}`, async () => {
 		assert(loadMicrofrontend, 'props.loadMicrofrontend must be a function');
-		return loadMicrofrontend({entry, scope, module});
+		return loadMicrofrontend({
+			entry,
+			scope,
+			module,
+			composition: 'MyComposition1',
+		});
 	});
 	const mount = data?.mount;
 	console.log(data);
